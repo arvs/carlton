@@ -1,5 +1,6 @@
 import csv
 import numpy as np
+import mlpy
 from sklearn import cross_validation, metrics
 from sklearn.preprocessing import Imputer
 
@@ -20,9 +21,9 @@ def type_or_none(t, v):
 class FreshnessModel(object):
   def __init__(self, trainfile, testfile):
     self.clf = None
-    self.data, self.target = self.default_features(self.trainfile, secondary = {'label': int})
+    self.data, self.target = self.default_features(trainfile, secondary = {'label': int})
     self.target = self.target.flatten()
-    self.test_data, self.test_ids = self.default_features(self.testfile, secondary = {'urlid': int})
+    self.test_data, self.test_ids = self.default_features(testfile, secondary = {'urlid': int})
     self.test_ids = self.test_ids.flatten()
 
   def default_features(self, filename, secondary = []):
@@ -97,7 +98,9 @@ class PerceptronModel(FreshnessModel):
     super(PerceptronModel, self).__init__(trainfile, testfile)
     self.clf = mlpy.Perceptron(alpha=0.1, thr=0.05, maxiters=100)
 
-  def train(self, data = self.data, target = None):
+  def train(self, data = None, target = None):
+    if not data:
+      data = self.data
     if not target:
       target = self.target
     self.clf.learn(data, target)
