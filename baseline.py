@@ -51,10 +51,11 @@ class FreshnessModel(object):
       'spelling_errors_ratio' : float,
     }
     with open(filename, 'rb') as f:
-      reader = csv.reader(f)
+      reader = csv.reader(f, delimiter = '\t')
       headers = reader.next()
       indices = {index_or_none(headers, name):tp for name, tp in features.iteritems() if index_or_none(headers, name) is not None}
       secondary_indices = {index_or_none(headers, name):tp for name, tp in secondary.iteritems() if index_or_none(headers, name) is not None}
+      # import ipdb; ipdb.set_trace()
       rows = []
       secondary_rows = []
       for row in reader:
@@ -106,7 +107,7 @@ class PerceptronModel(FreshnessModel):
     self.clf.learn(data, target)
 
   def pred(self, X):
-    return p.pred(X)
+    return self.clf.pred(X)
 
 if __name__ == '__main__':
   pass
