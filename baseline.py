@@ -68,7 +68,9 @@ class FreshnessModel(object):
   def pred(self, **kw):
     pass
 
-  def score(self, data, target = self.target):
+  def score(self, data, target = None):
+    if not target:
+      target = self.target
     predicted = self.pred(data)
     recall = metrics.recall_score(target, predicted, average = 'weighted')
     precision = metrics.precision_score(target, predicted, average = 'weighted')
@@ -95,7 +97,9 @@ class PerceptronModel(FreshnessModel):
     super(PerceptronModel, self).__init__(trainfile, testfile)
     self.clf = mlpy.Perceptron(alpha=0.1, thr=0.05, maxiters=100)
 
-  def train(self, data = self.data, target = self.target):
+  def train(self, data = self.data, target = None):
+    if not target:
+      target = self.target
     self.clf.learn(data, target)
 
   def pred(self, X):
