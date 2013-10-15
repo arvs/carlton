@@ -84,7 +84,6 @@ class FreshnessModel(object):
     scores = {'f1': [], 'precision':[], 'recall' : []}
     for i in xrange(num_splits):
       X_train, X_test, y_train, y_test = cross_validation.train_test_split(self.data, self.target, test_size = 0.4)
-      predicted = self.pred(X_train)
       self.train(X_train, y_train)
       p, r, f = self.score(X_test, y_test)
       scores['precision'].append(p)
