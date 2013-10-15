@@ -102,6 +102,7 @@ class PerceptronModel(FreshnessModel):
   def __init__(self, trainfile, testfile):
     super(PerceptronModel, self).__init__(trainfile, testfile)
     self.clf = mlpy.Perceptron(alpha=0.1, thr=0.05, maxiters=100)
+    self.train(data = self.data, target = self.target)
 
   def train(self, data = None, target = None):
     if data is None:
