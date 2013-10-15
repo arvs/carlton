@@ -79,6 +79,10 @@ class FreshnessModel(object):
     f1 = metrics.f1_score(target, predicted, average = 'weighted')
     return precision, recall, f1
 
+  def test_output(self, outfile = 'submission.csv'):
+    with open(outfile, 'wb') as f:
+      writer = csv.writer(f)
+      writer.writerows(itertools.izip(self.test_ids, self.clf.pred(data = self.test_data)))
 
   def cross_validation(self, num_splits = 4):
     scores = {'f1': [], 'precision':[], 'recall' : []}
