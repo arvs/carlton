@@ -83,6 +83,7 @@ class FreshnessModel(object):
   def test_output(self, outfile = 'submission.csv'):
     with open(outfile, 'wb') as f:
       writer = csv.writer(f)
+      writer.writerow(['urlid','label'])
       writer.writerows(itertools.izip(map(int, self.test_ids), self.pred(self.test_data)))
 
   def cross_validation(self, num_splits = 4):
