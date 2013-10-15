@@ -1,5 +1,6 @@
 import csv
 import numpy as np
+import itertools
 import mlpy
 from sklearn import cross_validation, metrics
 from sklearn.preprocessing import Imputer
@@ -82,7 +83,7 @@ class FreshnessModel(object):
   def test_output(self, outfile = 'submission.csv'):
     with open(outfile, 'wb') as f:
       writer = csv.writer(f)
-      writer.writerows(itertools.izip(self.test_ids, self.clf.pred(data = self.test_data)))
+      writer.writerows(itertools.izip(self.test_ids, self.pred(self.test_data)))
 
   def cross_validation(self, num_splits = 4):
     scores = {'f1': [], 'precision':[], 'recall' : []}
