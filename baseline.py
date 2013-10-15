@@ -83,7 +83,7 @@ class FreshnessModel(object):
   def test_output(self, outfile = 'submission.csv'):
     with open(outfile, 'wb') as f:
       writer = csv.writer(f)
-      writer.writerows(itertools.izip(self.test_ids, self.pred(self.test_data)))
+      writer.writerows(itertools.izip(map(int, self.test_ids), self.pred(self.test_data)))
 
   def cross_validation(self, num_splits = 4):
     scores = {'f1': [], 'precision':[], 'recall' : []}
@@ -99,9 +99,9 @@ class FreshnessModel(object):
 
 class PerceptronModel(FreshnessModel):
 
-  def __init__(self, trainfile, testfile):
+  def __init__(self, trainfile, testfile, alpha = 0.1, thr = 0.05, maxiters = 1000):
     super(PerceptronModel, self).__init__(trainfile, testfile)
-    self.clf = mlpy.Perceptron(alpha=0.1, thr=0.05, maxiters=100)
+    self.clf = mlpy.Perceptron(alpha, thr, maxiters)
     self.train(data = self.data, target = self.target)
 
   def train(self, data = None, target = None):
