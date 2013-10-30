@@ -12,7 +12,7 @@ from PIL import ImageFont
 import numpy as np
 from query_integral_image import query_integral_image
 
-FONT_PATH = "/Users/arvind/Library/Fonts/norwester.otf"
+FONT_PATH = "/home/arvind/norwester.otf"
 
 
 def make_wordcloud(words, counts, fname, font_path=None, width=400, height=200,
