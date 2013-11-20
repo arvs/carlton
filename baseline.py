@@ -4,9 +4,10 @@ import numpy as np
 import itertools
 import mlpy
 from sklearn import cross_validation, metrics
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import Imputer
 
-__all__ = ['FreshnessModel', 'PerceptronModel']
+__all__ = ['FreshnessModel', 'PerceptronModel', 'RandomForestModel']
 
 def index_or_none(l, v):
   try:
@@ -139,7 +140,7 @@ class PerceptronModel(FreshnessModel):
 
 class RandomForestModel(FreshnessModel):
   def __init__(self, trainfile, testfile):
-    super(RandomForestClassifier, self).__init__(trainfile, testfile)
+    super(RandomForestModel, self).__init__(trainfile, testfile)
     self.clf = RandomForestClassifier(n_estimators=10, max_depth=None)
 
   def train(self, data = None, target = None):
