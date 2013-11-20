@@ -140,8 +140,8 @@ class PerceptronModel(FreshnessModel):
     return self.clf.pred(X)
 
 class RandomForestModel(FreshnessModel):
-  def __init__(self, trainfile, testfile):
-    super(RandomForestModel, self).__init__(trainfile, testfile)
+  def __init__(self, trainfile, testfile, extra_features_file = None):
+    super(RandomForestModel, self).__init__(trainfile, testfile, extra_features_file)
     self.clf = RandomForestClassifier(n_estimators=10, max_depth=None)
 
   def train(self, data = None, target = None):
