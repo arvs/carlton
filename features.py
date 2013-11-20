@@ -21,6 +21,7 @@ class FeatureGenerator(object):
     boiler_idx = headers.index('boilerplate')
     urlid_idx = headers.index('urlid')
     features = {}
+    divide_if_none = lambda a,b: a/b if b != 0 else 0
     months = [calendar.month_name[i].lower() for i in range(1, 12)]
     months.extend([calendar.month_abbr[i].lower() for i in range(1, 12)])
     for row in row_iter:
@@ -32,22 +33,22 @@ class FeatureGenerator(object):
       body_len = len(body)
       num_unique_words = len(set(lowered_body))
       num_cap_words = len(filter(lambda v: re.match("[A-Z].*", v), body))
-      avg_words_per_sentence = body_len / num_cap_words
+      avg_words_per_sentence = divide_if_none(body_len, num_cap_words)
       num_mth_words = len(filter(lambda v: v in months, lowered_body))
       num_nums = tag_counts.get('CD', 0)
-      num_to_word_ratio = num_nums / body_len
+      num_to_word_ratio = divide_if_none(num_nums, body_len)
       num_foreign = tag_counts.get('FW', 0)
       avg_word_len = np.mean(map(len, body))
       agg_tags = lambda tags: sum([tag_counts.get(t, 0) for t in tags])
       num_nouns = agg_tags(['NN', 'NNP', 'NNPS', 'NNS'])
-      noun_to_word_ratio = num_nouns / body_len
-      proper_noun_ratio = agg_tags(['NNP', 'NNPS']) / num_nouns
+      noun_to_word_ratio = divide_if_none(num_nouns, body_len)
+      proper_noun_ratio = divide_if_none(agg_tags(['NNP', 'NNPS']), num_nouns)
       num_conj = tag_counts.get('CC', 0)
-      conj_ratio = num_conj / body_len
+      conj_ratio = divide_if_none(num_conj, body_len)
       len_words_no_sym_det = sum([v for k,v in tag_counts.iteritems() if k not in ('DT', '$', '(', ')', ',', '--', '.', ':', 'POS', 'SYM')])
       num_verbs = agg_tags(['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ'])
-      verb_ratio = num_verbs / body_len
-      past_to_pres_tense_ratio = agg_tags(['VBN', 'VBD']) / num_verbs
+      verb_ratio = divide_if_none(num_verbs, body_len)
+      past_to_pres_tense_ratio = divide_if_none(agg_tags(['VBN', 'VBD']), num_verbs)
       num_adj = agg_tags(['JJ', 'JJR', 'JJS'])
       num_list_markers = tag_counts.get('LS', 0)
 
