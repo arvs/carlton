@@ -13,7 +13,7 @@ class FeatureGenerator(object):
   def __init__(self, trainfile, testfile):
     with open(trainfile) as train, open(testfile) as test:
       self.features = self.nlp_features(csv.reader(train, delimiter='\t'))
-      self.features.update(self.nlp_features(csv.reader(train, delimiter='\t')))
+      self.features.update(self.nlp_features(csv.reader(test, delimiter='\t')))
 
   def nlp_features(self, row_iter):
     count = 0
