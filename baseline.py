@@ -35,6 +35,7 @@ class FreshnessModel(object):
             self.data[k].extend(v)
           if k in self.test_data:
             self.data[k].extend(v)
+    self.preprocess()
 
   def default_features(self, filename, index_col, secondary = []):
     features = {
@@ -136,9 +137,20 @@ class PerceptronModel(FreshnessModel):
   def pred(self, X):
     return self.clf.pred(X)
 
-class RandomForestClassifier(FreshnessModel):
+class RandomForestModel(FreshnessModel):
   def __init__(self, trainfile, testfile):
     super(RandomForestClassifier, self).__init__(trainfile, testfile)
+    self.clf = RandomForestClassifier(n_estimators=10, max_depth=None)
+
+  def train(self, data = None, target = None):
+    if data is None:
+      data = self.data
+    if target is None:
+      target = self.target
+    self.clf.fit_transform(data, target)
+
+  def pred(self, X):
+    return self.clf.predict(X)
 
 if __name__ == '__main__':
   pass
