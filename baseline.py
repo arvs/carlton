@@ -33,9 +33,9 @@ class FreshnessModel(object):
         extra_features = json.load(f)
         for k, v in extra_features.iteritems():
           if int(k) in self.data:
-            self.data[k].extend(v)
+            self.data[int(k)].extend(v)
           if int(k) in self.test_data:
-            self.data[k].extend(v)
+            self.data[int(k)].extend(v)
     import ipdb; ipdb.set_trace()
     self.preprocess()
 
