@@ -16,7 +16,7 @@ class FeatureGenerator(object):
       self.features.update(self.nlp_features(csv.reader(train, delimiter='\t')))
 
   def nlp_features(self, row_iter):
-
+    count = 0
     headers = row_iter.next()
     boiler_idx = headers.index('boilerplate')
     urlid_idx = headers.index('urlid')
@@ -25,6 +25,7 @@ class FeatureGenerator(object):
     months = [calendar.month_name[i].lower() for i in range(1, 12)]
     months.extend([calendar.month_abbr[i].lower() for i in range(1, 12)])
     for row in row_iter:
+      count += 1
       body = word_tokenize(row[boiler_idx])
       lowered_body = word_tokenize(row[boiler_idx].lower())
       tags = pos_tag(body)
@@ -54,6 +55,13 @@ class FeatureGenerator(object):
 
       features[int(row[urlid_idx])] = [body_len, num_unique_words, avg_words_per_sentence, num_cap_words, num_mth_words, num_nums, num_to_word_ratio, num_foreign, avg_word_len, num_nouns, noun_to_word_ratio, proper_noun_ratio, num_conj, conj_ratio, len_words_no_sym_det, num_verbs, verb_ratio, past_to_pres_tense_ratio, num_adj, num_list_markers]
 
+      if count % 100 == 0:
+        print count
+
   def write_to_file(self, filename):
     with open(filename, 'wb') as f:
       json.dump(self.features, f)
+
+if __name__ == '__main__':
+  fg = FeatureGenerator('train.tsv','test.tsv')
+  fg.write_to_file('extra_features_kaggle.json')
