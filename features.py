@@ -57,6 +57,7 @@ class FeatureGenerator(object):
 
       if count % 100 == 0:
         print count
+    return features
 
   def write_to_file(self, filename):
     with open(filename, 'wb') as f:
