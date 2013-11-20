@@ -32,10 +32,11 @@ class FreshnessModel(object):
       with open(extra_features_file) as f:
         extra_features = json.load(f)
         for k, v in extra_features.iteritems():
-          if k in self.data:
+          if int(k) in self.data:
             self.data[k].extend(v)
-          if k in self.test_data:
+          if int(k) in self.test_data:
             self.data[k].extend(v)
+    import ipdb; ipdb.set_trace()
     self.preprocess()
 
   def default_features(self, filename, index_col, secondary = []):
