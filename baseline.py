@@ -82,6 +82,7 @@ class FreshnessModel(object):
     true_ids = set([urlid for urlid, label in self.target.iteritems() if label])
     true_data = [v for k, v in self.data.iteritems() if k in true_ids]
     false_data = [v for k, v in self.data.iteritems() if k not in true_ids]
+    self.target = [1 for x in xrange(len(true_data))] + [0 for x in xrange(len(false_data))]
     imp = Imputer(missing_values='NaN', strategy='mean', axis=0)
     true_data = imp.fit_transform(true_data)
     false_data = imp.fit_transform(false_data)
