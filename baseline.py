@@ -36,7 +36,6 @@ class FreshnessModel(object):
             self.data[int(k)].extend(v)
           if int(k) in self.test_data:
             self.test_data[int(k)].extend(v)
-    import ipdb; ipdb.set_trace()
     self.preprocess()
 
   def default_features(self, filename, index_col, secondary = []):
