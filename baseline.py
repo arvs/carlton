@@ -1,4 +1,5 @@
 import csv
+import json
 import numpy as np
 import itertools
 import mlpy
@@ -20,14 +21,22 @@ def type_or_none(t, v):
     return np.nan
 
 class FreshnessModel(object):
-  def __init__(self, trainfile, testfile):
+  def __init__(self, trainfile, testfile, extra_features_file = None):
     self.clf = None
-    self.data, self.target = self.default_features(trainfile, secondary = {'label': int})
-    self.target = self.target.flatten()
-    self.test_data, self.test_ids = self.default_features(testfile, secondary = {'urlid': int})
-    self.test_ids = self.test_ids.flatten()
+    self.data, self.target = self.default_features(trainfile, index_col = "urlid", secondary = {'label': int})
+    self.target = {idx : label[0] for idx, label in self.target.iteritems()}
+    self.test_data, _ = self.default_features(testfile, index_col = "urlid", secondary = {'urlid': int})
+    self.test_ids = self.test_data.keys()
+    if extra_features_file:
+      with open(extra_features_file) as f:
+        extra_features = json.load(f)
+        for k, v in extra_features.iteritems():
+          if k in self.data:
+            self.data[k].extend(v)
+          if k in self.test_data:
+            self.data[k].extend(v)
 
-  def default_features(self, filename, secondary = []):
+  def default_features(self, filename, index_col, secondary = []):
     features = {
       'avglinksize' : float,
       'commonLinkRatio_1' : float,
@@ -54,16 +63,28 @@ class FreshnessModel(object):
     with open(filename, 'rb') as f:
       reader = csv.reader(f, delimiter = '\t')
       headers = reader.next()
+      id_idx = index_or_none(headers, index_col)
       indices = {index_or_none(headers, name):tp for name, tp in features.iteritems() if index_or_none(headers, name) is not None}
       secondary_indices = {index_or_none(headers, name):tp for name, tp in secondary.iteritems() if index_or_none(headers, name) is not None}
       # import ipdb; ipdb.set_trace()
-      rows = []
-      secondary_rows = []
+      rows = {}
+      secondary_rows = {}
       for row in reader:
-        rows.append([type_or_none(t, row[i]) for i, t in indices.iteritems()])
-        secondary_rows.append([type_or_none(t, row[i]) for i, t in secondary_indices.iteritems()])
-      imp = Imputer(missing_values='NaN', strategy='mean', axis=0)
-      return imp.fit_transform(rows), imp.fit_transform(secondary_rows)
+        rows[int(row[id_idx])] = [type_or_none(t, row[i]) for i, t in indices.iteritems()]
+        secondary_rows[int(row[id_idx])] = [type_or_none(t, row[i]) for i, t in secondary_indices.iteritems()]
+
+      return rows, secondary_rows
+
+  def preprocess(self):
+    # impute missing values
+    true_ids = set([urlid for urlid, label in self.target.iteritems() if label])
+    true_data = [v for k, v in self.data.iteritems() if k in true_ids]
+    false_data = [v for k, v in self.data.iteritems() if k not in true_ids]
+    imp = Imputer(missing_values='NaN', strategy='mean', axis=0)
+    true_data = imp.fit_transform(true_data)
+    false_data = imp.fit_transform(false_data)
+    self.data = np.concatenate((true_data, false_data), axis=0)
+    self.test_data = imp.fit_transform(self.test_data.values())
 
   def train(self, **kw):
     pass
@@ -114,6 +135,10 @@ class PerceptronModel(FreshnessModel):
 
   def pred(self, X):
     return self.clf.pred(X)
+
+class RandomForestClassifier(FreshnessModel):
+  def __init__(self, trainfile, testfile):
+    super(RandomForestClassifier, self).__init__(trainfile, testfile)
 
 if __name__ == '__main__':
   pass
